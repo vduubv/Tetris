@@ -180,5 +180,83 @@ public class Tetris extends Applet implements Runnable{
 		}
 	}
 	
+	public void delLine(){ //한 행이 다 찬 경우에 행 삭제
+		boolean delOk; //한행이 가득찼는지 여부
+		
+		for(int row = 20; row>=0; row--){
+			delOk= true; 
+			for(int col =0; col<12; col++)
+			{
+				if(!map[col][row]) delOk=false; //map[col][row]이 true가 아니면 delOk는 false;
+			}
+			if(delOk){
+				deleteAudio.play();
+				score+=10;//점수계산
+				
+				if (score<1000){//속도 조절
+					delayTime = 1000-score; //점수가 score보다 밑이면 delay시간은 1000-점수
+				}
+				else{
+					delayTime=0; // score가 1000이상이면 delay시간은 0
+				}
+				for(int delRow=row; delRow>0; delRow--){ //delOk가 true이면 한칸씩 밑으로 내려줌
+					for(int delCol=0; delCol<12; delCol++){
+						map[delCol][delRow] = map[delCol][delRow-1];
+						colorMap[delCol][delRow] = colorMap[delCol][delRow-1];
+					}
+				}
+				for(int i=0; i<12; i++){ //delOk가 true 이면 제일밑에칸을 지워줌
+					map[0][i]=false;
+					colorMap[0][i]=Color.white; 
+				}
+			row++;
+			}
+		}
+	}
+	
+	public void nextBlock() //다음 블록 결정
+	{
+		blockType=Math.abs(r.nextInt()%7); //블록 랜덤
+		blockPos=0;
+		delLine();
+		setBlockXY(blockType);
+		checkGameOver();
+	}
+	
+	public void checkGameOver(){ //게임 종료 여부 조사
+		for(int i=0; i<4; i++){
+			if(map[blockX[i]][blockY[i]]){ //만약 
+				if(runGame){
+					gameOverAudio.play();
+					runGame = false;
+				}
+			}
+		}
+	}
+	public void removeBlock()// 블록이 이동하거나 회전하기 위해 현재 블록을 삭제
+	{
+		for(int i=0; i<4; i++){
+			map[blockX[i]][blockY[i]]=false;
+			colorMap[blockX[i]][blockY[i]] = Color.white;
+		}
+	}
+	
+	public boolean checkDrop()
+	{
+		boolean dropOk = true;
+		for(int i=0; i<4; i++){
+			if((blockY[i]+1)!=21){
+				if(map[blockX[i]][blockY[i]+1])dropOk =false;
+			}
+			else{
+				dropOk=false;
+			}
+		}
+		return dropOk;
+	}
+	
+	
+	
 	
 }
+
