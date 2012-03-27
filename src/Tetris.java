@@ -241,11 +241,11 @@ public class Tetris extends Applet implements Runnable{
 		}
 	}
 	
-	public boolean checkDrop()
+	public boolean checkDrop() // 블록을 1행 아래로 이동할 수 있는지 조사
 	{
 		boolean dropOk = true;
 		for(int i=0; i<4; i++){
-			if((blockY[i]+1)!=21){
+			if((blockY[i]+1)!=21){ //Y좌표가 21이 아니면 
 				if(map[blockX[i]][blockY[i]+1])dropOk =false;
 			}
 			else{
@@ -255,8 +255,35 @@ public class Tetris extends Applet implements Runnable{
 		return dropOk;
 	}
 	
-	
-	
-	
+	public void drawBlock(){ //떨어지는 블록그리기
+		for(int i=0; i<4; i++){
+			map[blockX[i]][blockY[i]]=true;
+			colorMap[blockX[i]][blockY[i]] = colorType[blockType];
+		}
+	}
+	public void drawMap(){ //화면 그리기
+		for(int i=0; i<12; i++){
+			for(int j=0; i<21; j++){
+				if(map[i][j]){
+					offG.setColor(colorMap[i][j]);
+					offG.fillRect(i*15, j*15, 15, 15);
+				}
+			}
+		}
+	}
+	public void drawGrid(){ // 모눈 선 (격자) 그리기
+		offG.setColor(new Color(190,190,190));
+		
+		for(int i=0; i<12; i++){
+			for(int j=0; j<21; j++){
+				offG.drawRect(i*15, j*15, 15, 15);
+			}
+		}
+	}
+	public void stop(){
+		if((clock!=null)&&(clock.isAlive())){
+			clock = null; //시계 정지 (없앰)
+		}
+	}
 }
 
