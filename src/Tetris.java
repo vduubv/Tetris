@@ -222,7 +222,7 @@ public class Tetris extends Applet implements Runnable{
 		setBlockXY(blockType);
 		checkGameOver();
 	}
-	
+	//여기서부터 다시 분석하기
 	public void checkGameOver(){ //게임 종료 여부 조사
 		for(int i=0; i<4; i++){
 			if(map[blockX[i]][blockY[i]]){ //만약 
@@ -285,5 +285,75 @@ public class Tetris extends Applet implements Runnable{
 			clock = null; //시계 정지 (없앰)
 		}
 	}
+	
+	class MyKeyHandler extends KeyAdapter{
+		public void keyPressed(KeyEvent e){
+			int keyCode = (int)e.getKeyCode();
+			
+			if(keyCode==KeyEvent.VK_LEFT){
+				if(checkMove(-1)){
+					for(int i = 0; i<4; i++){
+						blockX[i] = blockX[i]+1;
+					}
+				}
+			}
+			
+			if(keyCode==KeyEvent.VK_RIGHT){
+				if(checkMove(1)){
+					for(int i = 0; i<4; i++){
+						blockX[i] = blockX[i]+1;
+					}
+				}
+			}
+			
+			if(keyCode==KeyEvent.VK_DOWN){
+				removeBlock();
+				
+				if(checkDrop()){
+					for(int i = 0; i<4; i++){
+						blockY[i] = blockY[i]+1;
+					}
+				} else {
+					drawBlock();
+				}
+			}
+			
+			if(keyCode==KeyEvent.VK_UP){
+				int[] tempX = new int[4];
+				int[] tempY = new int[4];
+				
+				for(int i =0; i<4; i++){
+					tempX[i] = blockX[i];
+					tempY[i] = blockY[i];
+				}
+				
+				removeBlock();
+				turnBlock();
+				
+				if(checkTurn()){
+					turnAudio.play();
+				}
+				
+				if(blockPos<4){
+					blockPos++;
+				} else {
+					blockPos = 0;
+				}
+			}else{
+				for(int i=0; i<4; i++) {
+					blockX[i] = tempX[i];
+					blockY[i] = tempY[i];
+					map[blockX[i]][blockY[i]]=true;
+					colorMap[blockX[i]][blockY[i]]=colorType[blockType];
+				}
+			}
+		}
+		drawBlock();
+		drawMap();
+		drawGrid();
+		repaint();
+	}
+	
+	
 }
 
