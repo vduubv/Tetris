@@ -225,7 +225,7 @@ public class Tetris extends Applet implements Runnable{
 	//여기서부터 다시 분석하기
 	public void checkGameOver(){ //게임 종료 여부 조사
 		for(int i=0; i<4; i++){
-			if(map[blockX[i]][blockY[i]]){ //만약 
+			if(map[blockX[i]][blockY[i]]){ //만약  해당좌표에 블록이 있다면 true값을 가져 if가 실행
 				if(runGame){
 					gameOverAudio.play();
 					runGame = false;
@@ -236,8 +236,8 @@ public class Tetris extends Applet implements Runnable{
 	public void removeBlock()// 블록이 이동하거나 회전하기 위해 현재 블록을 삭제
 	{
 		for(int i=0; i<4; i++){
-			map[blockX[i]][blockY[i]]=false;
-			colorMap[blockX[i]][blockY[i]] = Color.white;
+			map[blockX[i]][blockY[i]]=false;	//해당좌표 블록에 false값을 넣어줌
+			colorMap[blockX[i]][blockY[i]] = Color.white;	//블럭좌표에 색깔을 하얀색을 넣어줌(삭제)
 		}
 	}
 	
@@ -245,8 +245,8 @@ public class Tetris extends Applet implements Runnable{
 	{
 		boolean dropOk = true;
 		for(int i=0; i<4; i++){
-			if((blockY[i]+1)!=21){ //Y좌표가 21이 아니면 
-				if(map[blockX[i]][blockY[i]+1])dropOk =false;
+			if((blockY[i]+1)!=21){ //Y좌표가 21이 아니면 if문이 실행
+				if(map[blockX[i]][blockY[i]+1])dropOk =false; // 블락  (x좌표)i,(y좌표)i+1이 true 이면 if문을 실행해서 dropOk에 false값을 넣어줌
 			}
 			else{
 				dropOk=false;
@@ -257,7 +257,7 @@ public class Tetris extends Applet implements Runnable{
 	
 	public void drawBlock(){ //떨어지는 블록그리기
 		for(int i=0; i<4; i++){
-			map[blockX[i]][blockY[i]]=true;
+			map[blockX[i]][blockY[i]]=true; //해당 블록 좌표에 참값을 넣어줌
 			colorMap[blockX[i]][blockY[i]] = colorType[blockType];
 		}
 	}
@@ -266,6 +266,10 @@ public class Tetris extends Applet implements Runnable{
 			for(int j=0; i<21; j++){
 				if(map[i][j]){
 					offG.setColor(colorMap[i][j]);
+					offG.fillRect(i*15, j*15, 15, 15);
+				}
+				else{
+					offG.setColor(Color.white);
 					offG.fillRect(i*15, j*15, 15, 15);
 				}
 			}
@@ -332,7 +336,6 @@ public class Tetris extends Applet implements Runnable{
 				
 				if(checkTurn()){
 					turnAudio.play();
-				}
 				
 				if(blockPos<4){
 					blockPos++;
@@ -354,6 +357,175 @@ public class Tetris extends Applet implements Runnable{
 		repaint();
 	}
 	
+	public boolean checkTurn()
+	{
+		boolean turnOk=true;
+		
+		for(int i=0; i<4; i++){
+			if((blockX[i]>=0)&&(blockX[i]<12)&&(blockY[i]>=0)&&(blockY[i]<21)){
+				if(map[blockX[i]][blockY[i]]) turnOk = false;
+			}else{
+				turnOk=false;
+			}
+		}
+		return turnOk;
+	}
+	public boolean checkMove(int dir){
+		boolean moveOk=true;
+		removeBlock();
+		for(int i = 0; i<4; i++){
+			if(((blockX[i]+dir)>=0)&&((blockX[i]+dir)<12)){
+				if(map[blockX[i]+dir][blockY[i]]) moveOk=false;
+			}else{
+				moveOk = false;
+			}
+		}
+		if(!moveOk) drawBlock();
 	
+		return moveOk;
+	}
+	public void turnBlock(){
+		switch(blockType){
+			case 1 : 
+				switch(blockPos){
+				case 0:
+					blockX[0]=blockX[0]; blockY[0] = blockY[0];
+					blockX[1]=blockX[1]; blockY[1] = blockY[1];
+					blockX[2]=blockX[2]; blockY[2] = blockY[2];
+					blockX[3]=blockX[3]-1; blockY[3] = blockY[3]+1;
+					break;
+				
+				case 1: 
+					blockX[0]=blockX[0]-1; blockY[0] = blockY[0];
+					blockX[1]=blockX[1]+1; blockY[1] = blockY[1]-1;
+					blockX[2]=blockX[2]+1; blockY[2] = blockY[2]-1;
+					blockX[3]=blockX[3]; blockY[3] = blockY[3]-1;
+					break;
+				case 2:
+					blockX[0]=blockX[0]+1; blockY[0] = blockY[0];
+					blockX[1]=blockX[1]; blockY[1] = blockY[1]+1;
+					blockX[2]=blockX[2]; blockY[2] = blockY[2]+1;
+					blockX[3]=blockX[3]; blockY[3] = blockY[3]+1;
+					break;
+				case 3:
+					blockX[0]=blockX[0]; blockY[0] = blockY[0];
+					blockX[1]=blockX[1]-1; blockY[1] = blockY[1];
+					blockX[2]=blockX[2]-1; blockY[2] = blockY[2];
+					blockX[3]=blockX[3]+1; blockY[3] = blockY[3]-1;
+					break;
+				}
+				break;
+			case 2:
+				switch(blockPos){
+				case 0:
+					blockX[0]=blockX[0]-2; blockY[0] = blockY[0];
+					blockX[1]=blockX[1]+1; blockY[1] = blockY[1]-1;
+					blockX[2]=blockX[2]; blockY[2] = blockY[2];
+					blockX[3]=blockX[3]-1; blockY[3] = blockY[3]+1;
+					break;
+				case 1:
+					blockX[0]=blockX[0]; blockY[0] = blockY[0];
+					blockX[1]=blockX[1]; blockY[1] = blockY[1];
+					blockX[2]=blockX[2]+1; blockY[2] = blockY[2]-1;
+					blockX[3]=blockX[3]-1; blockY[3] = blockY[3]-11;
+					break;
+				case 2:
+					blockX[0]=blockX[0]+1; blockY[0] = blockY[0];
+					blockX[1]=blockX[1]; blockY[1] = blockY[1]+1;
+					blockX[2]=blockX[2]-1; blockY[2] = blockY[2]+2;
+					blockX[3]=blockX[3]-2; blockY[3] = blockY[3]+1;
+					break;
+				case 3:
+					blockX[0]=blockX[0]+1; blockY[0] = blockY[0];
+					blockX[1]=blockX[1]-1; blockY[1] = blockY[1];
+					blockX[2]=blockX[2]; blockY[2] = blockY[2]-1;
+					blockX[3]=blockX[3]; blockY[3] = blockY[3]-1;
+					break;
+				}
+				break;
+			case 3:
+				switch(blockPos){
+				case 0:
+					blockX[0]=blockX[0]+1; blockY[0] = blockY[0];
+					blockX[1]=blockX[1]; blockY[1] = blockY[1];
+					blockX[2]=blockX[2]; blockY[2] = blockY[2];
+					blockX[3]=blockX[3]-1; blockY[3] = blockY[3]+1;
+					break;
+				case 1:
+					blockX[0]=blockX[0]-2; blockY[0] = blockY[0];
+					blockX[1]=blockX[1]-1; blockY[1] = blockY[1]-1;
+					blockX[2]=blockX[2]+1; blockY[2] = blockY[2]-2;
+					blockX[3]=blockX[3]; blockY[3] = blockY[3]-1;
+					break;
+				case 2:
+					blockX[0]=blockX[0]+1; blockY[0] = blockY[0];
+					blockX[1]=blockX[1]+1; blockY[1] = blockY[1];
+					blockX[2]=blockX[2]-1; blockY[2] = blockY[2]+1;
+					blockX[3]=blockX[3]-1; blockY[3] = blockY[3]+1;
+					break;
+				case 3:
+					blockX[0]=blockX[0]; blockY[0] = blockY[0];
+					blockX[1]=blockX[1]-1; blockY[1] = blockY[1]+1;
+					blockX[2]=blockX[2]+1; blockY[2] = blockY[2];
+					blockX[3]=blockX[3]+2; blockY[3] = blockY[3]-1;
+					break;
+				}
+				break;
+			case 4:
+				switch(blockPos){
+				case 0:
+				case 2:
+					blockX[0]=blockX[0]+1; blockY[0] = blockY[0];
+					blockX[1]=blockX[1]+2; blockY[1] = blockY[1]-1;
+					blockX[2]=blockX[2]-1; blockY[2] = blockY[2];
+					blockX[3]=blockX[3]; blockY[3] = blockY[3]-1;
+					break;
+				case 1:
+				case 3:
+				blockX[0]=blockX[0]-1; blockY[0] = blockY[0];
+					blockX[1]=blockX[1]-2; blockY[1] = blockY[1]+1;
+					blockX[2]=blockX[2]+1; blockY[2] = blockY[2];
+					blockX[3]=blockX[3]; blockY[3] = blockY[3]+1;
+					break;
+				}
+				break;
+			case 5:
+				switch(blockPos){
+				case 0:
+				case 2:
+					blockX[0]=blockX[0]-1; blockY[0] = blockY[0];
+					blockX[1]=blockX[1]+1; blockY[1] = blockY[1]-1;
+					blockX[2]=blockX[2]; blockY[2] = blockY[2];
+					blockX[3]=blockX[3]+2; blockY[3] = blockY[3]-1;
+					break;
+				case 1:
+				case 3:
+				blockX[0]=blockX[0]+1; blockY[0] = blockY[0];
+					blockX[1]=blockX[1]-1; blockY[1] = blockY[1]+1;
+					blockX[2]=blockX[2]; blockY[2] = blockY[2];
+					blockX[3]=blockX[3]-2; blockY[3] = blockY[3]+1;
+					break;
+				}
+				break;
+			case 6:
+				switch(blockPos){
+				case 0:
+				case 2:
+					blockX[0]=blockX[0]+2; blockY[0] = blockY[0];
+					blockX[1]=blockX[1]+1; blockY[1] = blockY[1]+1;
+					blockX[2]=blockX[2]; blockY[2] = blockY[2]+2;
+					blockX[3]=blockX[3]-1; blockY[3] = blockY[3]+3;
+					break;
+				case 1:
+				case 3:
+					blockX[0]=blockX[0]-2; blockY[0] = blockY[0];
+					blockX[1]=blockX[1]-1; blockY[1] = blockY[1]-1;
+					blockX[2]=blockX[2]; blockY[2] = blockY[2]-2;
+					blockX[3]=blockX[3]+1; blockY[3] = blockY[3]-3;
+					break;
+				}
+				break;
+			}
+		}
+	}
 }
-
